@@ -51,17 +51,11 @@ async function handleRequest(request: Request) {
   const url = new URL(pathname, "https://raw.githubusercontent.com");
   const token = searchParams.get("token");
   if (token) {
-    url.searchParams.set("token", token);
-    const headers = new Headers();
-    headers.set("Authorization", `Bearer ${token}`);
-    const response = await fetch(url, { headers });
-    const { headers: responseHeaders, body } = response;
-    const contentType = responseHeaders.get("content-type");
-    return new Response(body, {
-      headers: {
-        "content-type": contentType || "application/octet-stream",
-      },
-    });
+    url.searchParams.delete("token");
+    const headers = {
+      Authorization: `token ${token}`,
+    };
+    return fetch(url, { headers });
   } else {
     return fetch(url);
   }
