@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.150.0/http/server.ts";
 import { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
 
 async function handleRequest(request: Request) {
-  const { pathname } = new URL(request.url);
+  const { pathname, searchParams } = new URL(request.url);
 
   if (pathname === "/") {
     const readme = await Deno.readTextFile("./README.md");
@@ -48,7 +48,23 @@ async function handleRequest(request: Request) {
     });
   }
 
-  return fetch(new URL(pathname, "https://raw.githubusercontent.com"));
+  const url = new URL(pathname, "https://raw.githubusercontent.com");
+  const token = searchParams.get("token");
+  if (token) {
+    url.searchParams.set("token", token);
+    const headers = new Headers();
+    headers.set("Authorization", `Bearer ${token}`);
+    const response = await fetch(url, { headers });
+    const { headers: responseHeaders, body } = response;
+    const contentType = responseHeaders.get("content-type");
+    return new Response(body, {
+      headers: {
+        "content-type": contentType || "application/octet-stream",
+      },
+    });
+  } else {
+    return fetch(url);
+  }
 }
 
 serve(handleRequest);
