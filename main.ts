@@ -1,5 +1,4 @@
-import { serve } from "https://deno.land/std@0.150.0/http/server.ts";
-import { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
+import { serve } from "https://deno.land/std/http/server.ts";
 
 async function handleRequest(request: Request) {
   const { hostname, pathname, searchParams } = new URL(request.url);
