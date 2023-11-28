@@ -3,33 +3,12 @@ import { CSS, render } from "https://deno.land/x/gfm@0.1.22/mod.ts";
 
 async function handleRequest(request: Request) {
   const { pathname, searchParams } = new URL(request.url);
+  const { hostname, pathname, searchParams } = new URL(request.url);
+  // 去掉第一个字符
+  const modifiedHostname = hostname.slice(1);
+  const url = new URL(pathname, modifiedHostname);
 
-  if (pathname === "/") {
-    const readme = await Deno.readTextFile("./README.md");
-    const body = render(readme);
-    const html = `<!DOCTYPE html>
-      <html lang="en">
-        <body">
-        test
-        </body>
-      </html>`;
-    return new Response(html, {
-      headers: {
-        "content-type": "text/html;charset=utf-8",
-      },
-    });
-  }
-
-  if (pathname === "/favicon.ico") {
-    return new Response(await Deno.readFile("favicon.ico"), {
-      headers: {
-        "content-type": "image/x-icon",
-      },
-    });
-  }
-
-
-  const url = new URL(pathname, "https://github.com");
+  const url = new URL(pathname, modifiedHostname);
   const token = searchParams.get("token");
   if (token) {
     url.searchParams.delete("token");
