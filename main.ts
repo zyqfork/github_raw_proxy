@@ -48,17 +48,31 @@ async function handleRequest(request: Request) {
     });
   }
 
-  const url = new URL(pathname, "https://raw.githubusercontent.com");
+  const { pathname, searchParams } = new URL(request.url);
+  const url = new URL(request.url);
   const token = searchParams.get("token");
-  if (token) {
-    url.searchParams.delete("token");
-    const headers = {
-      Authorization: `token ${token}`,
-    };
+
+  if (url.origin === "https://raw.githubusercontent.com") {
+    if (token) {
+      url.searchParams.delete("token");
+      const headers = {
+        Authorization: `token ${token}`,
+      };
+      return fetch(url, { headers });
+    } else {
+      return fetch(url);
+    }
+  } else if (url.origin === "https://github.com") {
+    if (token) {
+      url.searchParams.delete("token");
+      const headers = {
+        Authorization: `token ${token}`,
+      };
+      return fetch(url, { headers });
+    } else {
+      return fetch(url);
+    }
     return fetch(url, { headers });
-  } else {
-    return fetch(url);
   }
 }
-
 serve(handleRequest);
