@@ -48,7 +48,6 @@ async function handleRequest(request: Request) {
     });
   }
 
-  const { pathname, searchParams } = new URL(request.url);
   const url = new URL(request.url);
   const token = searchParams.get("token");
 
