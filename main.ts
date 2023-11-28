@@ -3,8 +3,9 @@ import { serve } from "https://deno.land/std/http/server.ts";
 async function handleRequest(request: Request) {
   const { hostname, pathname, searchParams } = new URL(request.url);
   // 去掉第一个字符
-  const modifiedHostname = hostname.slice(1);
-  const url = new URL(pathname, modifiedHostname);
+  const modifiedHostname = pathname.substring(1);
+  const url = new URL(modifiedHostname);
+  url.search = searchParams.toString();
 
   const token = searchParams.get("token");
   if (token) {
